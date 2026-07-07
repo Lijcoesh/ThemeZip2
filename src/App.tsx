@@ -5,6 +5,8 @@ import {
   createPlaceholderThemeResult,
   generateThemeFromImage,
   type ThemeGenerationResult,
+  type ThemeColorTokenPath,
+  updateThemeColorToken,
 } from "./lib/theme";
 import type { UploadedImage } from "./types/upload";
 import "./App.css";
@@ -71,6 +73,13 @@ function App() {
     };
   }, [uploadedImage]);
 
+  function handleColorTokenChange(path: ThemeColorTokenPath, value: string) {
+    setGenerationResult((currentResult) => ({
+      ...currentResult,
+      theme: updateThemeColorToken(currentResult.theme, path, value),
+    }));
+  }
+
   return (
     <main className="app-shell">
       <section className="hero-section" aria-labelledby="page-title">
@@ -100,6 +109,7 @@ function App() {
         status={generationStatus}
         error={generationError}
         hasUploadedImage={Boolean(uploadedImage)}
+        onColorTokenChange={handleColorTokenChange}
       />
     </main>
   );

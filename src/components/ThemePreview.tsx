@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
+import { TokenEditor } from "./TokenEditor";
 import type { ExtractedPalette } from "../types/color";
 import type { ThemeTokens } from "../types/theme";
+import type { ThemeColorTokenPath } from "../lib/theme";
 
 type ThemeGenerationStatus = "idle" | "processing" | "ready" | "error";
 
@@ -10,6 +12,7 @@ type ThemePreviewProps = {
   status: ThemeGenerationStatus;
   error: string | null;
   hasUploadedImage: boolean;
+  onColorTokenChange: (path: ThemeColorTokenPath, value: string) => void;
 };
 
 export function ThemePreview({
@@ -18,6 +21,7 @@ export function ThemePreview({
   status,
   error,
   hasUploadedImage,
+  onColorTokenChange,
 }: ThemePreviewProps) {
   const previewStyles = {
     "--theme-primary": theme.colors.brand.primary,
@@ -34,12 +38,6 @@ export function ThemePreview({
     "--theme-strong-border": theme.colors.border.strong,
     "--theme-shadow": theme.shadows.md,
   } as CSSProperties;
-  const colorTokenGroups = [
-    { label: "Brand", tokens: Object.entries(theme.colors.brand) },
-    { label: "Background", tokens: Object.entries(theme.colors.background) },
-    { label: "Text", tokens: Object.entries(theme.colors.text) },
-    { label: "Border", tokens: Object.entries(theme.colors.border) },
-  ];
   const statusLabel = getStatusLabel(status, hasUploadedImage);
   const statusClassName = ["preview-status", `is-${status}`].join(" ");
 
@@ -90,8 +88,7 @@ export function ThemePreview({
               <input
                 className="theme-input"
                 type="text"
-                value={theme.colors.brand.primary}
-                readOnly
+                placeholder="Preview input"
               />
             </label>
           </div>
@@ -103,7 +100,7 @@ export function ThemePreview({
         </div>
 
         <aside className="token-panel" aria-label="Generated semantic color tokens">
-          <h3>Semantic color tokens</h3>
+          <h3>Editable color tokens</h3>
 
           {palette?.colors.length ? (
             <div className="palette-summary" aria-label="Extracted palette">
@@ -124,22 +121,11 @@ export function ThemePreview({
             </div>
           ) : null}
 
-          {colorTokenGroups.map((group) => (
-            <div className="token-group" key={group.label}>
-              <span className="token-group-title">{group.label}</span>
-              {group.tokens.map(([tokenName, tokenValue]) => (
-                <div className="token-row" key={`${group.label}-${tokenName}`}>
-                  <span
-                    className="token-swatch"
-                    style={{ backgroundColor: tokenValue }}
-                    aria-hidden="true"
-                  />
-                  <strong>{tokenName}</strong>
-                  <span className="token-code">{tokenValue}</span>
-                </div>
-              ))}
-            </div>
-          ))}
+          <TokenEditor
+            colors={theme.colors}
+            disabled={status === "processing"}
+            onColorChange={onColorTokenChange}
+          />
         </aside>
       </div>
     </section>
