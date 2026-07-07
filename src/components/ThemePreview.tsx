@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { CodePreview } from "./CodePreview";
 import { ContrastWarnings } from "./ContrastWarnings";
 import { TokenEditor } from "./TokenEditor";
 import type { ExtractedPalette } from "../types/color";
@@ -133,6 +134,7 @@ export function ThemePreview({
       <div style={{ marginTop: "1rem" }}>
         <ContrastWarnings checks={contrastChecks} />
       </div>
+      <CodePreview theme={theme} />
     </section>
   );
 }
