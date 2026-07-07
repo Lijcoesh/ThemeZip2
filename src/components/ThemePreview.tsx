@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { CodePreview } from "./CodePreview";
 import { ContrastWarnings } from "./ContrastWarnings";
+import { ThemeExportPanel } from "./ThemeExportPanel";
 import { TokenEditor } from "./TokenEditor";
 import type { ExtractedPalette } from "../types/color";
 import type { ThemeTokens } from "../types/theme";
@@ -14,6 +15,8 @@ type ThemePreviewProps = {
   status: ThemeGenerationStatus;
   error: string | null;
   hasUploadedImage: boolean;
+  source: "placeholder" | "image";
+  sourceImageName?: string;
   onColorTokenChange: (path: ThemeColorTokenPath, value: string) => void;
 };
 
@@ -23,6 +26,8 @@ export function ThemePreview({
   status,
   error,
   hasUploadedImage,
+  source,
+  sourceImageName,
   onColorTokenChange,
 }: ThemePreviewProps) {
   const previewStyles = {
@@ -131,6 +136,15 @@ export function ThemePreview({
       <div style={{ marginTop: "1rem" }}>
         <ContrastWarnings checks={contrastChecks} />
       </div>
+
+      <ThemeExportPanel
+        theme={theme}
+        palette={palette}
+        contrastChecks={contrastChecks}
+        source={source}
+        sourceImageName={sourceImageName}
+        disabled={!hasUploadedImage || status === "processing"}
+      />
     </section>
   );
 }

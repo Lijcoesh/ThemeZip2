@@ -104,6 +104,8 @@ function App() {
         status={generationStatus}
         error={generationError}
         hasUploadedImage={Boolean(uploadedImage)}
+        source={generationResult.source}
+        sourceImageName={uploadedImage?.file.name}
         onColorTokenChange={handleColorTokenChange}
       />
     </main>

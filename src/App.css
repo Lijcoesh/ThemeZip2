@@ -158,7 +158,9 @@ h1 {
 
 .button-like,
 .ghost-button,
-.theme-button {
+.theme-button,
+.download-button,
+.export-preset-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -175,7 +177,8 @@ h1 {
 }
 
 .button-like,
-.theme-button {
+.theme-button,
+.download-button {
   border: 1px solid var(--primary);
   background: var(--primary);
   color: white;
@@ -183,35 +186,50 @@ h1 {
 }
 
 .button-like:hover,
-.theme-button:hover {
+.theme-button:hover,
+.download-button:hover {
   background: var(--primary-strong);
   border-color: var(--primary-strong);
 }
 
-.ghost-button {
+.ghost-button,
+.export-preset-button {
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--ink);
   padding: 0 16px;
 }
 
-.ghost-button:hover {
+.ghost-button:hover,
+.export-preset-button:hover,
+.export-preset-button.is-active {
   border-color: var(--border-strong);
   background: var(--page);
 }
 
 .button-like:active,
 .ghost-button:active,
-.theme-button:active {
+.theme-button:active,
+.download-button:active,
+.export-preset-button:active {
   transform: translateY(1px);
 }
 
 .button-like:focus-visible,
 .ghost-button:focus-visible,
 .theme-button:focus-visible,
+.download-button:focus-visible,
+.export-preset-button:focus-visible,
 .theme-input:focus-visible {
   outline: 3px solid rgba(13, 122, 103, 0.28);
   outline-offset: 3px;
+}
+
+.download-button:disabled {
+  border-color: var(--border-strong);
+  background: var(--border-strong);
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 .upload-error {
@@ -563,6 +581,131 @@ h1 {
 .contrast-status.is-low {
   border-color: #fecaca;
   background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.export-panel {
+  display: grid;
+  gap: 18px;
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.export-panel-header,
+.export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.export-kicker {
+  color: var(--primary);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.export-panel h3 {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 1.08rem;
+}
+
+.export-panel p {
+  max-width: 660px;
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.export-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.export-option {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--page);
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.export-option.is-selected {
+  border-color: #b8dfd1;
+  background: #f0faf6;
+}
+
+.export-option input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--primary);
+}
+
+.export-option span {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.export-option strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.export-option small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.export-option code {
+  color: var(--primary);
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.export-summary {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.export-summary strong {
+  color: var(--ink);
+}
+
+.export-helper,
+.export-success,
+.export-error {
+  margin: 0;
+  font-weight: 800;
+}
+
+.export-success {
+  color: var(--primary);
+}
+
+.export-error {
   color: var(--danger);
 }
 
