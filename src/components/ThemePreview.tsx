@@ -96,10 +96,7 @@ export function ThemePreview({
             </label>
           </div>
 
-          <div className="theme-alert" role="status">
-            Alert: generated themes are suggestions. Review the tokens before
-            using them in a project.
-          </div>
+          <CodePreview theme={theme} variant="embedded" />
         </div>
 
         <aside className="token-panel" aria-label="Generated semantic color tokens">
@@ -134,7 +131,6 @@ export function ThemePreview({
       <div style={{ marginTop: "1rem" }}>
         <ContrastWarnings checks={contrastChecks} />
       </div>
-      <CodePreview theme={theme} />
     </section>
   );
 }

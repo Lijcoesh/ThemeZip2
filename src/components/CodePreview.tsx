@@ -6,11 +6,14 @@ import {
 } from "../lib/theme";
 import type { ThemeTokens } from "../types/theme";
 
+type CodePreviewVariant = "default" | "embedded";
+
 type CodePreviewProps = {
   theme: ThemeTokens;
+  variant?: CodePreviewVariant;
 };
 
-export function CodePreview({ theme }: CodePreviewProps) {
+export function CodePreview({ theme, variant = "default" }: CodePreviewProps) {
   const previews = useMemo(() => generateThemeCodePreviews(theme), [theme]);
   const [selectedPreviewId, setSelectedPreviewId] =
     useState<ThemeCodePreviewId>("typescript");
@@ -34,14 +37,18 @@ export function CodePreview({ theme }: CodePreviewProps) {
   }
 
   return (
-    <section className="code-preview-section" aria-labelledby="code-preview-title">
+    <section
+      className={`code-preview-section is-${variant}`}
+      aria-labelledby="code-preview-title"
+    >
       <div className="code-preview-header">
         <div>
           <span className="code-preview-kicker">Generated output</span>
           <h3 id="code-preview-title">Code previews</h3>
           <p>
-            These client-side outputs are generated from the current token set
-            and refresh as soon as color tokens change.
+            {variant === "embedded"
+              ? "Open a generated file and check how the current theme tokens export."
+              : "These client-side outputs are generated from the current token set and refresh as soon as color tokens change."}
           </p>
         </div>
       </div>

@@ -93,11 +93,6 @@ function App() {
             starter theme with semantic color tokens. Image processing stays
             local in your browser for this MVP phase.
           </p>
-          <div className="hero-points" aria-label="ThemeZip MVP scope">
-            <span>No login</span>
-            <span>No backend</span>
-            <span>Browser-only preview</span>
-          </div>
         </div>
 
         <ImageUploader value={uploadedImage} onImageChange={setUploadedImage} />
