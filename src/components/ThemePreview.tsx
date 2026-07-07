@@ -1,8 +1,9 @@
 import type { CSSProperties } from "react";
+import { ContrastWarnings } from "./ContrastWarnings";
 import { TokenEditor } from "./TokenEditor";
 import type { ExtractedPalette } from "../types/color";
 import type { ThemeTokens } from "../types/theme";
-import type { ThemeColorTokenPath } from "../lib/theme";
+import { getThemeContrastChecks, type ThemeColorTokenPath } from "../lib/theme";
 
 type ThemeGenerationStatus = "idle" | "processing" | "ready" | "error";
 
@@ -40,6 +41,7 @@ export function ThemePreview({
   } as CSSProperties;
   const statusLabel = getStatusLabel(status, hasUploadedImage);
   const statusClassName = ["preview-status", `is-${status}`].join(" ");
+  const contrastChecks = getThemeContrastChecks(theme.colors);
 
   return (
     <section className="preview-section" aria-labelledby="preview-title">
@@ -127,6 +129,9 @@ export function ThemePreview({
             onColorChange={onColorTokenChange}
           />
         </aside>
+      </div>
+      <div style={{ marginTop: "1rem" }}>
+        <ContrastWarnings checks={contrastChecks} />
       </div>
     </section>
   );
