@@ -90,7 +90,7 @@ function App() {
           <p className="hero-description">
             Upload a screenshot, logo or UI mockup and preview a practical
             starter theme with semantic color tokens. Image processing stays
-            local in your browser for this MVP phase.
+            local in your browser.
           </p>
         </div>
 
