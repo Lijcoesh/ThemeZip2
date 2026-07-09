@@ -59,6 +59,13 @@ export function ThemePreview({
             Spacing, radius, shadows and typography stay as preset tokens for
             now.
           </p>
+          <p className="preview-note" role="note">
+            Important: this works best with images that have a limited color
+            palette. The more colors and visual noise in the source, the more
+            likely the generated theme will be less accurate. Screenshots of
+            busy sites with lots of photos or mixed imagery usually produce
+            weaker results.
+          </p>
           {error ? (
             <p className="generation-error" role="alert">
               {error}
