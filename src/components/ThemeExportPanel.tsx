@@ -45,6 +45,9 @@ export function ThemeExportPanel({
     [selectedFormats],
   );
   const areExportControlsDisabled = exportStatus === "generating";
+  const downloadDisabledReason = disabled
+    ? "Upload an image before downloading the generated theme kit."
+    : null;
   const downloadLabel = getThemeKitDownloadLabel(selectedFormats);
 
   useEffect(() => {
@@ -162,14 +165,23 @@ export function ThemeExportPanel({
           <span>At least one format stays selected for every ZIP.</span>
         </div>
 
-        <button
-          className="download-button"
-          type="button"
-          disabled={disabled || areExportControlsDisabled}
-          onClick={handleDownloadClick}
+        <span
+          className="download-button-wrap"
         >
-          {exportStatus === "generating" ? "Creating ZIP..." : downloadLabel}
-        </button>
+          <button
+            className="download-button"
+            type="button"
+            disabled={disabled || areExportControlsDisabled}
+            onClick={handleDownloadClick}
+          >
+            {exportStatus === "generating" ? "Creating ZIP..." : downloadLabel}
+          </button>
+          {downloadDisabledReason ? (
+            <span className="download-tooltip" role="tooltip">
+              {downloadDisabledReason}
+            </span>
+          ) : null}
+        </span>
       </div>
 
       {disabled ? (
