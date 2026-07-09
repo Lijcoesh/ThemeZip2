@@ -44,6 +44,7 @@ export function ThemeExportPanel({
     () => areThemeExportFormatsEqual(selectedFormats, fullThemeExportFormatIds),
     [selectedFormats],
   );
+  const areExportControlsDisabled = exportStatus === "generating";
   const downloadLabel = getThemeKitDownloadLabel(selectedFormats);
 
   useEffect(() => {
@@ -115,6 +116,7 @@ export function ThemeExportPanel({
           className={`export-preset-button ${isFullKitSelected ? "is-active" : ""}`}
           type="button"
           aria-pressed={isFullKitSelected}
+          disabled={areExportControlsDisabled}
           onClick={handleFullKitSelect}
         >
           Full kit
@@ -128,13 +130,20 @@ export function ThemeExportPanel({
 
           return (
             <label
-              className={`export-option ${isSelected ? "is-selected" : ""}`}
+              className={[
+                "export-option",
+                isSelected ? "is-selected" : "",
+                isLastSelected || areExportControlsDisabled ? "is-locked" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              aria-disabled={isLastSelected || areExportControlsDisabled}
               key={option.id}
             >
               <input
                 type="checkbox"
                 checked={isSelected}
-                disabled={isLastSelected}
+                disabled={isLastSelected || areExportControlsDisabled}
                 onChange={() => handleFormatToggle(option.id)}
               />
               <span>
@@ -156,7 +165,7 @@ export function ThemeExportPanel({
         <button
           className="download-button"
           type="button"
-          disabled={disabled || exportStatus === "generating"}
+          disabled={disabled || areExportControlsDisabled}
           onClick={handleDownloadClick}
         >
           {exportStatus === "generating" ? "Creating ZIP..." : downloadLabel}

@@ -55,9 +55,8 @@ export function ThemePreview({
         <div>
           <h2 id="preview-title">Generated theme preview</h2>
           <p>
-            Preview semantic color suggestions from the uploaded reference.
-            Spacing, radius, shadows and typography stay as preset tokens for
-            now.
+            Review semantic color suggestions alongside preset spacing, radius,
+            shadow and typography tokens.
           </p>
           {error ? (
             <p className="generation-error" role="alert">
@@ -133,7 +132,7 @@ export function ThemePreview({
           />
         </aside>
       </div>
-      <div style={{ marginTop: "1rem" }}>
+      <div className="contrast-panel-wrap">
         <ContrastWarnings checks={contrastChecks} />
       </div>
 
