@@ -88,9 +88,9 @@ function App() {
             Generate a React theme starter from a visual reference.
           </h1>
           <p className="hero-description">
-            Upload a screenshot, logo or UI mockup and preview a practical
-            starter theme with semantic color tokens. Image processing stays
-            local in your browser.
+            Upload a screenshot, logo or UI mockup. ThemeZip suggests semantic
+            tokens, previews them in React components and exports a clean
+            client-side ZIP.
           </p>
         </div>
 
