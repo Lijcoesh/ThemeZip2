@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import { ImageUploader } from "./components/ImageUploader";
 import { ThemePreview } from "./components/ThemePreview";
 import {
@@ -107,6 +108,7 @@ function App() {
         sourceImageName={uploadedImage?.file.name}
         onColorTokenChange={handleColorTokenChange}
       />
+      <Analytics />
     </main>
   );
 }
