@@ -184,13 +184,6 @@ export function ThemeExportPanel({
         </span>
       </div>
 
-      {disabled ? (
-        <p className="export-helper" role="status">
-          Upload an image and let ThemeZip finish generating tokens before
-          downloading.
-        </p>
-      ) : null}
-
       {exportStatus === "downloaded" ? (
         <p className="export-success" role="status">
           ZIP generated locally and download started.
