@@ -84,7 +84,6 @@ function App() {
     <main className="app-shell">
       <section className="hero-section" aria-labelledby="page-title">
         <div className="hero-copy">
-          <p className="eyebrow">ThemeZip MVP</p>
           <h1 id="page-title">
             Generate a React theme starter from a visual reference.
           </h1>
