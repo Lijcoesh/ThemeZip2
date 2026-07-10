@@ -11,12 +11,14 @@ type ExportFormatOptionsProps = {
   options: readonly ThemeExportFormatOption[];
   selectedFormats: readonly ThemeExportFormatId[];
   onToggle: (formatId: ThemeExportFormatId) => void;
+  disabled?: boolean;
 };
 
 export default function ExportFormatOptions({
   options,
   selectedFormats,
   onToggle,
+  disabled = false,
 }: ExportFormatOptionsProps) {
   return (
     <Box
@@ -43,13 +45,14 @@ export default function ExportFormatOptions({
               border: `1px solid ${isSelected ? "#b8dfd1" : chromeColors.border}`,
               borderRadius: "8px",
               background: isSelected ? "#f0faf6" : chromeColors.page,
-              cursor: "pointer",
+              cursor: disabled ? "default" : "pointer",
+              opacity: disabled ? 0.72 : 1,
               transition: "background-color 180ms ease, border-color 180ms ease",
             }}
           >
             <Checkbox
               checked={isSelected}
-              disabled={isLastSelected}
+              disabled={disabled || isLastSelected}
               onChange={() => onToggle(option.id)}
               sx={{ marginTop: "2px" }}
             />

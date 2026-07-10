@@ -36,7 +36,7 @@ type ThemeExportPanelProps = {
   contrastChecks: readonly ThemeContrastCheck[];
   source: "placeholder" | "image";
   sourceImageName?: string;
-  disabled?: boolean;
+  disabledReason?: string | null;
 };
 
 export default function ThemeExportPanel({
@@ -45,7 +45,7 @@ export default function ThemeExportPanel({
   contrastChecks,
   source,
   sourceImageName,
-  disabled = false,
+  disabledReason = null,
 }: ThemeExportPanelProps) {
   const [selectedFormats, setSelectedFormats] = useState<
     ThemeExportFormatId[]
@@ -57,9 +57,6 @@ export default function ThemeExportPanel({
     [selectedFormats],
   );
   const areExportControlsDisabled = exportStatus === "generating";
-  const downloadDisabledReason = disabled
-    ? "Upload an image before downloading the generated theme kit."
-    : null;
   const downloadLabel = getThemeKitDownloadLabel(selectedFormats);
 
   useEffect(() => {
@@ -193,6 +190,7 @@ export default function ThemeExportPanel({
         options={themeExportFormatOptions}
         selectedFormats={selectedFormats}
         onToggle={handleFormatToggle}
+        disabled={areExportControlsDisabled}
       />
 
       <Box
@@ -224,10 +222,10 @@ export default function ThemeExportPanel({
         </Box>
 
         <Tooltip
-          title={downloadDisabledReason ?? ""}
-          disableHoverListener={!downloadDisabledReason}
-          disableFocusListener={!downloadDisabledReason}
-          disableTouchListener={!downloadDisabledReason}
+          title={disabledReason ?? ""}
+          disableHoverListener={!disabledReason}
+          disableFocusListener={!disabledReason}
+          disableTouchListener={!disabledReason}
           arrow
           placement="top"
           slotProps={{
@@ -254,7 +252,7 @@ export default function ThemeExportPanel({
           <span>
             <Button
               type="button"
-              disabled={disabled || exportStatus === "generating"}
+              disabled={Boolean(disabledReason) || exportStatus === "generating"}
               onClick={handleDownloadClick}
               sx={filledButtonSx}
             >

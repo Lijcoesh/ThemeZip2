@@ -64,6 +64,7 @@ export default function ThemePreview({
 }: ThemePreviewProps) {
   const statusLabel = getStatusLabel(status, hasUploadedImage);
   const contrastChecks = getThemeContrastChecks(theme.colors);
+  const exportDisabledReason = getExportDisabledReason(status, hasUploadedImage);
 
   return (
     <Paper
@@ -270,10 +271,25 @@ export default function ThemePreview({
         contrastChecks={contrastChecks}
         source={source}
         sourceImageName={sourceImageName}
-        disabled={!hasUploadedImage || status === "processing"}
+        disabledReason={exportDisabledReason}
       />
     </Paper>
   );
+}
+
+function getExportDisabledReason(
+  status: ThemeGenerationStatus,
+  hasUploadedImage: boolean,
+) {
+  if (!hasUploadedImage) {
+    return "Upload an image before downloading the generated theme kit.";
+  }
+
+  if (status === "processing") {
+    return "Wait for theme generation to finish before downloading the theme kit.";
+  }
+
+  return null;
 }
 
 function getStatusLabel(

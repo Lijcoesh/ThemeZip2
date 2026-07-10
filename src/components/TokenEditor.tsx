@@ -44,7 +44,7 @@ const ColorSwatchInput = styled("input")({
     borderRadius: 7,
   },
   "&:focus-visible": {
-    outline: "3px solid rgba(13, 122, 103, 0.28)",
+    outline: `3px solid ${chromeColors.focusRing}`,
     outlineOffset: "2px",
   },
 });
