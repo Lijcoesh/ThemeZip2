@@ -1,4 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import type { ExtractedPalette } from "../types/color";
 import type { ThemeTokens } from "../types/theme";
 import type { ThemeContrastCheck } from "../lib/theme";
@@ -15,6 +20,13 @@ import {
   downloadBlob,
   generateThemeKitZip,
 } from "../lib/export/themeKitZip";
+import {
+  chromeColors,
+  filledButtonSx,
+  ghostButtonActiveSx,
+  ghostButtonSx,
+} from "../theme/muiTheme";
+import ExportFormatOptions from "./ExportFormatOptions";
 
 type ExportStatus = "idle" | "generating" | "downloaded" | "error";
 
@@ -24,16 +36,16 @@ type ThemeExportPanelProps = {
   contrastChecks: readonly ThemeContrastCheck[];
   source: "placeholder" | "image";
   sourceImageName?: string;
-  disabled?: boolean;
+  disabledReason?: string | null;
 };
 
-export function ThemeExportPanel({
+export default function ThemeExportPanel({
   theme,
   palette,
   contrastChecks,
   source,
   sourceImageName,
-  disabled = false,
+  disabledReason = null,
 }: ThemeExportPanelProps) {
   const [selectedFormats, setSelectedFormats] = useState<
     ThemeExportFormatId[]
@@ -45,9 +57,6 @@ export function ThemeExportPanel({
     [selectedFormats],
   );
   const areExportControlsDisabled = exportStatus === "generating";
-  const downloadDisabledReason = disabled
-    ? "Upload an image before downloading the generated theme kit."
-    : null;
   const downloadLabel = getThemeKitDownloadLabel(selectedFormats);
 
   useEffect(() => {
@@ -104,98 +113,175 @@ export function ThemeExportPanel({
   }
 
   return (
-    <section className="export-panel" aria-labelledby="export-panel-title">
-      <div className="export-panel-header">
-        <div>
-          <span className="export-kicker">Theme kit export</span>
-          <h3 id="export-panel-title">Choose export formats</h3>
-          <p>
+    <Paper
+      component="section"
+      aria-labelledby="export-panel-title"
+      sx={{
+        display: "grid",
+        gap: "18px",
+        marginTop: "20px",
+        padding: "18px",
+        border: `1px solid ${chromeColors.border}`,
+        borderRadius: "8px",
+        background: chromeColors.surface,
+        color: chromeColors.ink,
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "16px",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box>
+          <Typography
+            component="span"
+            sx={{
+              color: chromeColors.primary,
+              fontSize: "0.76rem",
+              fontWeight: 900,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            Theme kit export
+          </Typography>
+          <Typography
+            component="h3"
+            id="export-panel-title"
+            sx={{
+              margin: "4px 0 0",
+              color: chromeColors.ink,
+              fontSize: "1.08rem",
+              fontWeight: 700,
+            }}
+          >
+            Choose export formats
+          </Typography>
+          <Typography
+            component="p"
+            sx={{
+              maxWidth: "660px",
+              margin: "6px 0 0",
+              color: chromeColors.muted,
+              lineHeight: 1.55,
+            }}
+          >
             Select the files you want ThemeZip to include in your ZIP. The same
             semantic tokens power every selected output.
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
-        <button
-          className={`export-preset-button ${isFullKitSelected ? "is-active" : ""}`}
+        <Button
           type="button"
           aria-pressed={isFullKitSelected}
           disabled={areExportControlsDisabled}
           onClick={handleFullKitSelect}
+          sx={[ghostButtonSx, isFullKitSelected && ghostButtonActiveSx]}
         >
           Full kit
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      <div className="export-options">
-        {themeExportFormatOptions.map((option) => {
-          const isSelected = selectedFormats.includes(option.id);
-          const isLastSelected = isSelected && selectedFormats.length === 1;
+      <ExportFormatOptions
+        options={themeExportFormatOptions}
+        selectedFormats={selectedFormats}
+        onToggle={handleFormatToggle}
+        disabled={areExportControlsDisabled}
+      />
 
-          return (
-            <label
-              className={[
-                "export-option",
-                isSelected ? "is-selected" : "",
-                isLastSelected || areExportControlsDisabled ? "is-locked" : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              aria-disabled={isLastSelected || areExportControlsDisabled}
-              key={option.id}
-            >
-              <input
-                type="checkbox"
-                checked={isSelected}
-                disabled={isLastSelected || areExportControlsDisabled}
-                onChange={() => handleFormatToggle(option.id)}
-              />
-              <span>
-                <strong>{option.label}</strong>
-                <small>{option.description}</small>
-                <code>{option.fileHint}</code>
-              </span>
-            </label>
-          );
-        })}
-      </div>
-
-      <div className="export-actions">
-        <div className="export-summary">
-          <strong>{formatSelectedCount(selectedFormats.length)}</strong>
-          <span>At least one format stays selected for every ZIP.</span>
-        </div>
-
-        <span
-          className="download-button-wrap"
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "16px",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box
+          sx={{
+            display: "grid",
+            gap: "4px",
+            color: chromeColors.muted,
+            fontSize: "0.9rem",
+          }}
         >
-          <button
-            className="download-button"
-            type="button"
-            disabled={disabled || areExportControlsDisabled}
-            onClick={handleDownloadClick}
+          <Typography
+            component="strong"
+            sx={{ color: chromeColors.ink, fontSize: "0.9rem", fontWeight: 700 }}
           >
-            {exportStatus === "generating" ? "Creating ZIP..." : downloadLabel}
-          </button>
-          {downloadDisabledReason ? (
-            <span className="download-tooltip" role="tooltip">
-              {downloadDisabledReason}
-            </span>
-          ) : null}
-        </span>
-      </div>
+            {formatSelectedCount(selectedFormats.length)}
+          </Typography>
+          <Typography component="span" sx={{ color: "inherit", fontSize: "0.9rem" }}>
+            At least one format stays selected for every ZIP.
+          </Typography>
+        </Box>
+
+        <Tooltip
+          title={disabledReason ?? ""}
+          disableHoverListener={!disabledReason}
+          disableFocusListener={!disabledReason}
+          disableTouchListener={!disabledReason}
+          arrow
+          placement="top"
+          slotProps={{
+            tooltip: {
+              sx: {
+                backgroundColor: chromeColors.ink,
+                color: chromeColors.surface,
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                lineHeight: 1.4,
+                padding: "8px 12px",
+                borderRadius: "6px",
+                boxShadow: chromeColors.shadowMd,
+                maxWidth: 220,
+              },
+            },
+            arrow: {
+              sx: {
+                color: chromeColors.ink,
+              },
+            },
+          }}
+        >
+          <span>
+            <Button
+              type="button"
+              disabled={Boolean(disabledReason) || exportStatus === "generating"}
+              onClick={handleDownloadClick}
+              sx={filledButtonSx}
+            >
+              {exportStatus === "generating" ? "Creating ZIP..." : downloadLabel}
+            </Button>
+          </span>
+        </Tooltip>
+      </Box>
 
       {exportStatus === "downloaded" ? (
-        <p className="export-success" role="status">
+        <Typography
+          component="p"
+          role="status"
+          sx={{ margin: 0, color: chromeColors.primary, fontWeight: 800 }}
+        >
           ZIP generated locally and download started.
-        </p>
+        </Typography>
       ) : null}
 
       {exportError ? (
-        <p className="export-error" role="alert">
+        <Typography
+          component="p"
+          role="alert"
+          sx={{ margin: 0, color: chromeColors.danger, fontWeight: 800 }}
+        >
           {exportError}
-        </p>
+        </Typography>
       ) : null}
-    </section>
+    </Paper>
   );
 }
 

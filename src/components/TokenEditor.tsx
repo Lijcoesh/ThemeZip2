@@ -1,4 +1,7 @@
 import { useId } from "react";
+import Box from "@mui/material/Box";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import { styled } from "@mui/material/styles";
 import {
   editableColorTokenGroups,
   getThemeColorTokenValue,
@@ -7,6 +10,7 @@ import {
   type ThemeColorTokenPath,
 } from "../lib/theme";
 import type { ThemeColors } from "../types/theme";
+import { chromeColors, monoFontFamily } from "../theme/muiTheme";
 
 type TokenEditorProps = {
   colors: ThemeColors;
@@ -14,7 +18,38 @@ type TokenEditorProps = {
   onColorChange: (path: ThemeColorTokenPath, value: string) => void;
 };
 
-export function TokenEditor({
+// Native <input type="color"> has no MUI equivalent, so it stays a real
+// native input. Its swatch is rendered via vendor pseudo-elements, which
+// `sx` cannot target — `styled()` can, since it emits a real CSS class.
+// Border color is the per-render theme's border token (matches the
+// original `var(--theme-border)`), so it's applied as an inline `style`
+// override at the call site rather than baked in here statically.
+const ColorSwatchInput = styled("input")({
+  width: 34,
+  height: 34,
+  padding: 0,
+  border: `1px solid ${chromeColors.border}`,
+  borderRadius: 8,
+  background: "transparent",
+  cursor: "pointer",
+  "&::-webkit-color-swatch-wrapper": {
+    padding: 0,
+  },
+  "&::-webkit-color-swatch": {
+    border: 0,
+    borderRadius: 7,
+  },
+  "&::-moz-color-swatch": {
+    border: 0,
+    borderRadius: 7,
+  },
+  "&:focus-visible": {
+    outline: `3px solid ${chromeColors.focusRing}`,
+    outlineOffset: "2px",
+  },
+});
+
+export default function TokenEditor({
   colors,
   disabled = false,
   onColorChange,
@@ -26,57 +61,166 @@ export function TokenEditor({
   }
 
   return (
-    <div className="token-editor" aria-label="Editable semantic color tokens">
-      <p className="token-editor-intro">
+    <Box aria-label="Editable semantic color tokens" sx={{ display: "grid", gap: "16px" }}>
+      <Box
+        component="p"
+        sx={{
+          margin: 0,
+          color: colors.text.secondary,
+          fontSize: "0.9rem",
+          lineHeight: 1.55,
+        }}
+      >
         Adjust suggested HEX values and the preview will update immediately.
-      </p>
+      </Box>
 
       {editableColorTokenGroups.map((group) => (
-        <fieldset className="token-group" key={group.label} disabled={disabled}>
-          <legend className="token-group-title">{group.label}</legend>
+        <Box
+          component="fieldset"
+          key={group.label}
+          disabled={disabled}
+          sx={{
+            display: "grid",
+            gap: "10px",
+            minInlineSize: 0,
+            margin: 0,
+            padding: 0,
+            border: 0,
+            "&:disabled": {
+              opacity: 0.72,
+            },
+          }}
+        >
+          <Box
+            component="legend"
+            sx={{
+              color: colors.text.muted,
+              fontSize: "0.76rem",
+              fontWeight: 900,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            {group.label}
+          </Box>
 
           {group.tokens.map((token) => {
             const tokenValue = getThemeColorTokenValue(colors, token);
             const isValidHex = isHexColorValue(tokenValue);
 
             return (
-              <div className="token-row" key={`${token.group}-${token.token}`}>
-                <input
-                  className="token-color-input"
+              <Box
+                key={`${token.group}-${token.token}`}
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "34px minmax(82px, 1fr) minmax(110px, 132px)",
+                  gap: "10px",
+                  alignItems: "center",
+                  color: colors.text.secondary,
+                  fontSize: "0.925rem",
+                  "@media (max-width: 520px)": {
+                    gridTemplateColumns: "30px 1fr",
+                  },
+                }}
+              >
+                <ColorSwatchInput
                   type="color"
                   value={isValidHex ? tokenValue : "#000000"}
                   aria-label={`${group.label} ${token.label} color picker`}
+                  disabled={disabled}
+                  style={{ borderColor: colors.border.default }}
                   onChange={(event) =>
                     onColorChange(token, event.currentTarget.value)
                   }
                 />
 
-                <label className="token-label" htmlFor={getInputId(token)}>
+                <Box
+                  component="label"
+                  htmlFor={getInputId(token)}
+                  sx={{
+                    display: "grid",
+                    gap: "2px",
+                    minWidth: 0,
+                    color: colors.text.secondary,
+                    fontWeight: 800,
+                  }}
+                >
                   {token.label}
-                  <span>
+                  <Box
+                    component="span"
+                    sx={{
+                      color: colors.text.muted,
+                      fontFamily: monoFontFamily,
+                      fontSize: "0.73rem",
+                      fontWeight: 700,
+                      overflowWrap: "anywhere",
+                    }}
+                  >
                     {token.group}.{token.token}
-                  </span>
-                </label>
+                  </Box>
+                </Box>
 
-                <input
+                <OutlinedInput
                   id={getInputId(token)}
-                  className="token-value-input"
                   type="text"
                   value={tokenValue}
-                  inputMode="text"
-                  maxLength={7}
-                  pattern="#[0-9A-Fa-f]{6}"
-                  spellCheck={false}
-                  aria-invalid={!isValidHex}
+                  disabled={disabled}
                   onChange={(event) =>
                     onColorChange(token, event.currentTarget.value)
                   }
+                  inputProps={{
+                    inputMode: "text",
+                    maxLength: 7,
+                    pattern: "#[0-9A-Fa-f]{6}",
+                    spellCheck: false,
+                    "aria-invalid": !isValidHex,
+                  }}
+                  sx={{
+                    minWidth: 0,
+                    minHeight: 38,
+                    borderRadius: "8px",
+                    background: colors.background.page,
+                    color: colors.text.primary,
+                    fontFamily: monoFontFamily,
+                    fontSize: "0.86rem",
+                    "@media (max-width: 520px)": {
+                      gridColumn: "1 / -1",
+                    },
+                    "& .MuiOutlinedInput-input": {
+                      padding: "0 10px",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: colors.border.default,
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: colors.border.default,
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: colors.border.default,
+                    },
+                    "&.Mui-focused": {
+                      outlineOffset: "2px",
+                    },
+                    ...(!isValidHex && {
+                      color: chromeColors.danger,
+                      background: chromeColors.dangerSoft,
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: chromeColors.danger,
+                      },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: chromeColors.danger,
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: chromeColors.danger,
+                      },
+                    }),
+                  }}
                 />
-              </div>
+              </Box>
             );
           })}
-        </fieldset>
+        </Box>
       ))}
-    </div>
+    </Box>
   );
 }

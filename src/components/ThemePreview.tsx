@@ -1,11 +1,15 @@
-import type { CSSProperties } from "react";
-import { CodePreview } from "./CodePreview";
-import { ContrastWarnings } from "./ContrastWarnings";
-import { ThemeExportPanel } from "./ThemeExportPanel";
-import { TokenEditor } from "./TokenEditor";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Paper from "@mui/material/Paper";
+import type { SxProps, Theme } from "@mui/material/styles";
+import ContrastWarnings from "./ContrastWarnings";
+import ThemeExportPanel from "./ThemeExportPanel";
+import TokenEditor from "./TokenEditor";
+import ThemeShowcaseCard from "./ThemeShowcaseCard";
 import type { ExtractedPalette } from "../types/color";
 import type { ThemeTokens } from "../types/theme";
 import { getThemeContrastChecks, type ThemeColorTokenPath } from "../lib/theme";
+import { chromeColors } from "../theme/muiTheme";
 
 type ThemeGenerationStatus = "idle" | "processing" | "ready" | "error";
 
@@ -20,7 +24,35 @@ type ThemePreviewProps = {
   onColorTokenChange: (path: ThemeColorTokenPath, value: string) => void;
 };
 
-export function ThemePreview({
+/**
+ * `.preview-status` base (background primary-soft / color primary) plus the
+ * `.is-ready` / `.is-processing` / `.is-error` variants — all STATIC chrome
+ * colors, unrelated to the dynamic `theme` prop.
+ */
+const statusPillColors: Record<
+  ThemeGenerationStatus,
+  { background: string; color: string }
+> = {
+  idle: { background: chromeColors.primarySoft, color: chromeColors.primary },
+  processing: { background: "#eff6ff", color: "#1d4ed8" },
+  ready: { background: "#e5f4ef", color: "#0d7a67" },
+  error: { background: chromeColors.dangerSoft, color: chromeColors.danger },
+};
+
+function statusPillSx(status: ThemeGenerationStatus): SxProps<Theme> {
+  const colors = statusPillColors[status];
+  return {
+    height: "auto",
+    background: colors.background,
+    color: colors.color,
+    fontSize: "0.875rem",
+    "& .MuiChip-label": {
+      padding: "8px 12px",
+    },
+  };
+}
+
+export default function ThemePreview({
   theme,
   palette,
   status,
@@ -30,97 +62,187 @@ export function ThemePreview({
   sourceImageName,
   onColorTokenChange,
 }: ThemePreviewProps) {
-  const previewStyles = {
-    "--theme-primary": theme.colors.brand.primary,
-    "--theme-secondary": theme.colors.brand.secondary,
-    "--theme-accent": theme.colors.brand.accent,
-    "--theme-page": theme.colors.background.page,
-    "--theme-surface": theme.colors.background.surface,
-    "--theme-muted": theme.colors.background.muted,
-    "--theme-text-primary": theme.colors.text.primary,
-    "--theme-text-secondary": theme.colors.text.secondary,
-    "--theme-text-muted": theme.colors.text.muted,
-    "--theme-text-inverse": theme.colors.text.inverse,
-    "--theme-border": theme.colors.border.default,
-    "--theme-strong-border": theme.colors.border.strong,
-    "--theme-shadow": theme.shadows.md,
-  } as CSSProperties;
   const statusLabel = getStatusLabel(status, hasUploadedImage);
-  const statusClassName = ["preview-status", `is-${status}`].join(" ");
   const contrastChecks = getThemeContrastChecks(theme.colors);
+  const exportDisabledReason = getExportDisabledReason(status, hasUploadedImage);
 
   return (
-    <section className="preview-section" aria-labelledby="preview-title">
-      <div className="preview-header">
-        <div>
-          <h2 id="preview-title">Generated theme preview</h2>
-          <p>
-            Review semantic color suggestions alongside preset spacing, radius,
-            shadow and typography tokens.
-          </p>
-          <p className="preview-note" role="note">
+    <Paper
+      component="section"
+      elevation={0}
+      aria-labelledby="preview-title"
+      sx={{
+        border: `1px solid ${chromeColors.border}`,
+        boxShadow: chromeColors.shadowMd,
+        padding: "24px",
+        "@media (max-width: 520px)": {
+          padding: "16px",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "24px",
+          alignItems: "start",
+          marginBottom: "22px",
+          "@media (max-width: 920px)": {
+            flexDirection: "column",
+          },
+        }}
+      >
+        <Box>
+          <Box
+            component="h2"
+            id="preview-title"
+            sx={{
+              margin: 0,
+              color: chromeColors.ink,
+              fontSize: "1.35rem",
+              fontWeight: 700,
+            }}
+          >
+            Generated theme preview
+          </Box>
+          <Box
+            component="p"
+            sx={{
+              margin: "8px 0 0",
+              color: chromeColors.muted,
+              lineHeight: 1.6,
+            }}
+          >
+            Preview semantic color suggestions from the uploaded reference.
+            Spacing, radius, shadows and typography stay as preset tokens for
+            now.
+          </Box>
+          <Box
+            component="p"
+            role="note"
+            sx={{
+              // `.preview-header p` (margin: 8px 0 0; color: muted;
+              // line-height: 1.6) has higher specificity (class+type) than
+              // `.preview-note` (class only) and wins the conflicting
+              // `margin` declaration outright — the note's own `margin: 12px
+              // 0 0` never actually applies. Reproduced 1:1 here.
+              margin: "8px 0 0",
+              padding: "12px 14px",
+              borderLeft: "4px solid #d97706",
+              borderRadius: "8px",
+              background: "rgba(217, 119, 6, 0.08)",
+              color: chromeColors.muted,
+              fontSize: "0.95rem",
+              lineHeight: 1.6,
+            }}
+          >
             Important: this works best with images that have a limited color
             palette. The more colors and visual noise in the source, the more
             likely the generated theme will be less accurate. Screenshots of
             busy sites with lots of photos or mixed imagery usually produce
             weaker results.
-          </p>
+          </Box>
           {error ? (
-            <p className="generation-error" role="alert">
+            <Box
+              component="p"
+              role="alert"
+              sx={{
+                // Same specificity clash as `.preview-note` above:
+                // `.preview-header p` overrides `.generation-error`'s own
+                // `margin` (10px 0 0) AND `color` (danger) since both
+                // properties are declared in the higher-specificity rule.
+                // The error text renders in muted gray with an 8px top
+                // margin today, not red with 10px — preserved as-is.
+                margin: "8px 0 0",
+                color: chromeColors.muted,
+                fontWeight: 700,
+                lineHeight: 1.6,
+              }}
+            >
               {error}
-            </p>
+            </Box>
           ) : null}
-        </div>
-        <span className={statusClassName}>{statusLabel}</span>
-      </div>
+        </Box>
+        <Chip label={statusLabel} sx={statusPillSx(status)} />
+      </Box>
 
-      <div className="preview-canvas" style={previewStyles}>
-        <div className="theme-page-section">
-          <span className="theme-badge">React starter theme</span>
-          <h3>Semantic tokens ready for component checks.</h3>
-          <p>
-            Preview the button, card, input, badge and alert against one shared
-            token set before ThemeZip exports anything.
-          </p>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1.15fr) minmax(260px, 0.85fr)",
+          gap: "20px",
+          padding: "20px",
+          border: `1px solid ${theme.colors.border.default}`,
+          borderRadius: "8px",
+          background: theme.colors.background.page,
+          color: theme.colors.text.primary,
+          "@media (max-width: 920px)": {
+            gridTemplateColumns: "1fr",
+          },
+          "@media (max-width: 520px)": {
+            padding: "16px",
+          },
+        }}
+      >
+        <ThemeShowcaseCard theme={theme} />
 
-          <div className="theme-controls">
-            <button className="theme-button" type="button">
-              Preview button
-            </button>
-            <span className="theme-badge">Badge</span>
-          </div>
-
-          <div className="theme-card">
-            <h4>Card example</h4>
-            <p>
-              Cards use surface, border, radius and shadow tokens from the same
-              generated theme object.
-            </p>
-
-            <label className="theme-field">
-              Example input
-              <input
-                className="theme-input"
-                type="text"
-                placeholder="Preview input"
-              />
-            </label>
-          </div>
-
-          <CodePreview theme={theme} variant="embedded" />
-        </div>
-
-        <aside className="token-panel" aria-label="Generated semantic color tokens">
-          <h3>Editable color tokens</h3>
+        <Box
+          component="aside"
+          aria-label="Generated semantic color tokens"
+          sx={{
+            display: "grid",
+            gap: "16px",
+            alignContent: "start",
+            padding: "16px",
+            // `.token-panel` inherits the `--theme-border` / `--theme-surface`
+            // custom properties cascading down from `.preview-canvas`'s
+            // inline style, so its border/background are the dynamic theme
+            // tokens too, not static chrome — despite reading like a plain
+            // chrome container at a glance.
+            border: `1px solid ${theme.colors.border.default}`,
+            borderRadius: "8px",
+            background: theme.colors.background.surface,
+          }}
+        >
+          <Box
+            component="h3"
+            sx={{
+              margin: 0,
+              // No color declared on `.token-panel h3`; it inherits
+              // `.preview-canvas`'s `color: var(--theme-text-primary)`.
+              color: theme.colors.text.primary,
+              fontSize: "1rem",
+              fontWeight: 700,
+            }}
+          >
+            Editable color tokens
+          </Box>
 
           {palette?.colors.length ? (
-            <div className="palette-summary" aria-label="Extracted palette">
-              <span className="token-group-title">Extracted palette</span>
-              <div className="palette-swatches">
+            <Box aria-label="Extracted palette" sx={{ display: "grid", gap: "10px" }}>
+              <Box
+                component="span"
+                sx={{
+                  color: theme.colors.text.muted,
+                  fontSize: "0.76rem",
+                  fontWeight: 900,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Extracted palette
+              </Box>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {palette.colors.map((color) => (
-                  <span
-                    className="palette-swatch"
-                    style={{ backgroundColor: color.hex }}
+                  <Box
+                    component="span"
+                    sx={{
+                      width: "28px",
+                      height: "28px",
+                      border: `1px solid ${theme.colors.border.default}`,
+                      borderRadius: "8px",
+                      backgroundColor: color.hex,
+                    }}
                     title={`${color.hex} (${Math.round(
                       color.population * 100,
                     )}% of sampled pixels)`}
@@ -128,8 +250,8 @@ export function ThemePreview({
                     key={color.hex}
                   />
                 ))}
-              </div>
-            </div>
+              </Box>
+            </Box>
           ) : null}
 
           <TokenEditor
@@ -137,11 +259,11 @@ export function ThemePreview({
             disabled={status === "processing"}
             onColorChange={onColorTokenChange}
           />
-        </aside>
-      </div>
-      <div className="contrast-panel-wrap">
+        </Box>
+      </Box>
+      <Box sx={{ marginTop: "1rem" }}>
         <ContrastWarnings checks={contrastChecks} />
-      </div>
+      </Box>
 
       <ThemeExportPanel
         theme={theme}
@@ -149,10 +271,25 @@ export function ThemePreview({
         contrastChecks={contrastChecks}
         source={source}
         sourceImageName={sourceImageName}
-        disabled={!hasUploadedImage || status === "processing"}
+        disabledReason={exportDisabledReason}
       />
-    </section>
+    </Paper>
   );
+}
+
+function getExportDisabledReason(
+  status: ThemeGenerationStatus,
+  hasUploadedImage: boolean,
+) {
+  if (!hasUploadedImage) {
+    return "Upload an image before downloading the generated theme kit.";
+  }
+
+  if (status === "processing") {
+    return "Wait for theme generation to finish before downloading the theme kit.";
+  }
+
+  return null;
 }
 
 function getStatusLabel(
