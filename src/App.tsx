@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import { Analytics } from "@vercel/analytics/react";
 import ImageUploader from "./components/ImageUploader";
 import ThemePreview from "./components/ThemePreview";
 import { useThemeGeneration } from "./hooks/useThemeGeneration";
@@ -97,7 +98,9 @@ function App() {
         sourceImageName={uploadedImage?.file.name}
         onColorTokenChange={handleColorTokenChange}
       />
+      <Analytics />
     </Box>
+
   );
 }
 

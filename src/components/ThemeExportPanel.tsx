@@ -55,6 +55,10 @@ export default function ThemeExportPanel({
     () => areThemeExportFormatsEqual(selectedFormats, fullThemeExportFormatIds),
     [selectedFormats],
   );
+  const areExportControlsDisabled = exportStatus === "generating";
+  const downloadDisabledReason = disabled
+    ? "Upload an image before downloading the generated theme kit."
+    : null;
   const downloadLabel = getThemeKitDownloadLabel(selectedFormats);
 
   useEffect(() => {
@@ -176,6 +180,7 @@ export default function ThemeExportPanel({
         <Button
           type="button"
           aria-pressed={isFullKitSelected}
+          disabled={areExportControlsDisabled}
           onClick={handleFullKitSelect}
           sx={[ghostButtonSx, isFullKitSelected && ghostButtonActiveSx]}
         >
