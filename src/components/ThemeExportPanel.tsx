@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import type { ExtractedPalette } from "../types/color";
 import type { ThemeTokens } from "../types/theme";
@@ -222,26 +223,46 @@ export default function ThemeExportPanel({
           </Typography>
         </Box>
 
-        <Button
-          type="button"
-          disabled={disabled || exportStatus === "generating"}
-          onClick={handleDownloadClick}
-          sx={filledButtonSx}
+        <Tooltip
+          title={downloadDisabledReason ?? ""}
+          disableHoverListener={!downloadDisabledReason}
+          disableFocusListener={!downloadDisabledReason}
+          disableTouchListener={!downloadDisabledReason}
+          arrow
+          placement="top"
+          slotProps={{
+            tooltip: {
+              sx: {
+                backgroundColor: chromeColors.ink,
+                color: chromeColors.surface,
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                lineHeight: 1.4,
+                padding: "8px 12px",
+                borderRadius: "6px",
+                boxShadow: chromeColors.shadowMd,
+                maxWidth: 220,
+              },
+            },
+            arrow: {
+              sx: {
+                color: chromeColors.ink,
+              },
+            },
+          }}
         >
-          {exportStatus === "generating" ? "Creating ZIP..." : downloadLabel}
-        </Button>
+          <span>
+            <Button
+              type="button"
+              disabled={disabled || exportStatus === "generating"}
+              onClick={handleDownloadClick}
+              sx={filledButtonSx}
+            >
+              {exportStatus === "generating" ? "Creating ZIP..." : downloadLabel}
+            </Button>
+          </span>
+        </Tooltip>
       </Box>
-
-      {disabled ? (
-        <Typography
-          component="p"
-          role="status"
-          sx={{ margin: 0, color: chromeColors.ink, fontWeight: 800 }}
-        >
-          Upload an image and let ThemeZip finish generating tokens before
-          downloading.
-        </Typography>
-      ) : null}
 
       {exportStatus === "downloaded" ? (
         <Typography
