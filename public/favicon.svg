@@ -1,3 +1,9 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="16" fill="#0F172A" />
+  <path d="M16 22H48L38 32L48 42H16L26 32L16 22Z" fill="#F8FAFC" />
+  <path d="M24 30H40V34H24V30Z" fill="#38BDF8" />
+</svg>
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="1254" height="1254">
 <path d="M0 0 C413.82 0 827.64 0 1254 0 C1254 413.82 1254 827.64 1254 1254 C840.18 1254 426.36 1254 0 1254 C0 840.18 0 426.36 0 0 Z " fill="#060E1F" transform="translate(0,0)"/>
@@ -49,3 +55,10 @@
 <path d="M0 0 C1.625 1.6875 1.625 1.6875 3 4 C2.1875 6.75 2.1875 6.75 1 9 C0.01 8.67 -0.98 8.34 -2 8 C-1.67 7.67 -1.34 7.34 -1 7 C-0.63239269 4.67182036 -0.29758419 2.3381615 0 0 Z " fill="#5F39B8" transform="translate(760,459)"/>
 <path d="M0 0 C0.66 0 1.32 0 2 0 C2 1.32 2 2.64 2 4 C1.34 4 0.68 4 0 4 C-0.33 5.32 -0.66 6.64 -1 8 C-1.66 8 -2.32 8 -3 8 C-1.125 2.25 -1.125 2.25 0 0 Z " fill="#222637" transform="translate(969,426)"/>
 </svg>
+=======
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="16" fill="#0F172A" />
+  <path d="M16 22H48L38 32L48 42H16L26 32L16 22Z" fill="#F8FAFC" />
+  <path d="M24 30H40V34H24V30Z" fill="#38BDF8" />
+</svg>
+>>>>>>> 45ee41b (Restore SEO crawl assets)
