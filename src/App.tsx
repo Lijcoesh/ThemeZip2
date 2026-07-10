@@ -1,101 +1,91 @@
-import { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
 import { ImageUploader } from "./components/ImageUploader";
 import { ThemePreview } from "./components/ThemePreview";
-import {
-  createPlaceholderThemeResult,
-  generateThemeFromImage,
-  type ThemeGenerationResult,
-  type ThemeColorTokenPath,
-  updateThemeColorToken,
-} from "./lib/theme";
-import type { UploadedImage } from "./types/upload";
-import "./App.css";
-
-type GenerationStatus = "idle" | "processing" | "ready" | "error";
+import { useThemeGeneration } from "./hooks/useThemeGeneration";
+import { chromeColors } from "./theme/muiTheme";
 
 function App() {
-  const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
-  const [generationResult, setGenerationResult] =
-    useState<ThemeGenerationResult>(() => createPlaceholderThemeResult());
-  const [generationStatus, setGenerationStatus] =
-    useState<GenerationStatus>("idle");
-  const [generationError, setGenerationError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    if (!uploadedImage) {
-      setGenerationResult(createPlaceholderThemeResult());
-      setGenerationStatus("idle");
-      setGenerationError(null);
-      return;
-    }
-
-    setGenerationResult(
-      createPlaceholderThemeResult({
-        imageName: uploadedImage.file.name,
-      }),
-    );
-    setGenerationStatus("processing");
-    setGenerationError(null);
-
-    generateThemeFromImage(uploadedImage.file)
-      .then((result) => {
-        if (!isCancelled) {
-          setGenerationResult(result);
-          setGenerationStatus("ready");
-        }
-      })
-      .catch(() => {
-        if (!isCancelled) {
-          setGenerationResult(
-            createPlaceholderThemeResult({
-              imageName: uploadedImage.file.name,
-            }),
-          );
-          setGenerationStatus("error");
-          setGenerationError(
-            "ThemeZip could not extract colors from this image, so it kept the placeholder token preset.",
-          );
-        }
-      });
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [uploadedImage]);
-
-  useEffect(() => {
-    return () => {
-      if (uploadedImage?.previewUrl) {
-        URL.revokeObjectURL(uploadedImage.previewUrl);
-      }
-    };
-  }, [uploadedImage]);
-
-  function handleColorTokenChange(path: ThemeColorTokenPath, value: string) {
-    setGenerationResult((currentResult) => ({
-      ...currentResult,
-      theme: updateThemeColorToken(currentResult.theme, path, value),
-    }));
-  }
+  const {
+    uploadedImage,
+    setUploadedImage,
+    generationResult,
+    generationStatus,
+    generationError,
+    handleColorTokenChange,
+  } = useThemeGeneration();
 
   return (
-    <main className="app-shell">
-      <section className="hero-section" aria-labelledby="page-title">
-        <div className="hero-copy">
-          <h1 id="page-title">
+    <Box
+      component="main"
+      sx={{
+        width: "min(1180px, calc(100% - 32px))",
+        margin: "0 auto",
+        padding: "48px 0",
+        "@media (max-width: 920px)": {
+          width: "min(100% - 24px, 680px)",
+          padding: "28px 0",
+        },
+      }}
+    >
+      <Box
+        component="section"
+        aria-labelledby="page-title"
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1fr) minmax(320px, 460px)",
+          gap: "32px",
+          alignItems: "stretch",
+          marginBottom: "32px",
+          "@media (max-width: 920px)": {
+            gridTemplateColumns: "1fr",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            minHeight: 520,
+            "@media (max-width: 920px)": {
+              minHeight: "auto",
+            },
+          }}
+        >
+          <Box
+            component="h1"
+            id="page-title"
+            sx={{
+              maxWidth: "760px",
+              margin: 0,
+              color: chromeColors.ink,
+              fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
+              lineHeight: 0.98,
+              "@media (max-width: 520px)": {
+                fontSize: "2.6rem",
+              },
+            }}
+          >
             Generate a React theme starter from a visual reference.
-          </h1>
-          <p className="hero-description">
+          </Box>
+          <Box
+            component="p"
+            sx={{
+              maxWidth: "660px",
+              margin: "24px 0 0",
+              color: chromeColors.muted,
+              fontSize: "1.125rem",
+              lineHeight: 1.7,
+            }}
+          >
             Upload a screenshot, logo or UI mockup and preview a practical
             starter theme with semantic color tokens. Image processing stays
             local in your browser.
-          </p>
-        </div>
+          </Box>
+        </Box>
 
         <ImageUploader value={uploadedImage} onImageChange={setUploadedImage} />
-      </section>
+      </Box>
 
       <ThemePreview
         theme={generationResult.theme}
@@ -107,7 +97,7 @@ function App() {
         sourceImageName={uploadedImage?.file.name}
         onColorTokenChange={handleColorTokenChange}
       />
-    </main>
+    </Box>
   );
 }
 
