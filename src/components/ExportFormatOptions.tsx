@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
-import { chromeColors, monoFontFamily } from "../../theme/muiTheme";
+import { chromeColors, monoFontFamily } from "../theme/muiTheme";
 import type {
   ThemeExportFormatId,
   ThemeExportFormatOption,
-} from "../../lib/export/exportFormats";
+} from "../lib/export/exportFormats";
 
 type ExportFormatOptionsProps = {
   options: readonly ThemeExportFormatOption[];
@@ -13,7 +13,7 @@ type ExportFormatOptionsProps = {
   onToggle: (formatId: ThemeExportFormatId) => void;
 };
 
-export function ExportFormatOptions({
+export default function ExportFormatOptions({
   options,
   selectedFormats,
   onToggle,

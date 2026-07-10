@@ -3,9 +3,9 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import type { ExtractedPalette } from "../../types/color";
-import type { ThemeTokens } from "../../types/theme";
-import type { ThemeContrastCheck } from "../../lib/theme";
+import type { ExtractedPalette } from "../types/color";
+import type { ThemeTokens } from "../types/theme";
+import type { ThemeContrastCheck } from "../lib/theme";
 import {
   areThemeExportFormatsEqual,
   defaultThemeExportFormatIds,
@@ -13,19 +13,19 @@ import {
   getThemeKitDownloadLabel,
   themeExportFormatOptions,
   type ThemeExportFormatId,
-} from "../../lib/export/exportFormats";
+} from "../lib/export/exportFormats";
 import {
   createThemeKitZipFilename,
   downloadBlob,
   generateThemeKitZip,
-} from "../../lib/export/themeKitZip";
+} from "../lib/export/themeKitZip";
 import {
   chromeColors,
   filledButtonSx,
   ghostButtonActiveSx,
   ghostButtonSx,
-} from "../../theme/muiTheme";
-import { ExportFormatOptions } from "./ExportFormatOptions";
+} from "../theme/muiTheme";
+import ExportFormatOptions from "./ExportFormatOptions";
 
 type ExportStatus = "idle" | "generating" | "downloaded" | "error";
 
@@ -38,7 +38,7 @@ type ThemeExportPanelProps = {
   disabled?: boolean;
 };
 
-export function ThemeExportPanel({
+export default function ThemeExportPanel({
   theme,
   palette,
   contrastChecks,

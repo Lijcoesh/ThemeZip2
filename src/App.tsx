@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
-import { ImageUploader } from "./components/ImageUploader";
-import { ThemePreview } from "./components/ThemePreview";
+import ImageUploader from "./components/ImageUploader";
+import ThemePreview from "./components/ThemePreview";
 import { useThemeGeneration } from "./hooks/useThemeGeneration";
 import { chromeColors } from "./theme/muiTheme";
 

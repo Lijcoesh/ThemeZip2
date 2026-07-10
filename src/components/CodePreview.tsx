@@ -8,10 +8,10 @@ import {
   generateThemeCodePreviews,
   type GeneratedThemeCodeFile,
   type ThemeCodePreviewId,
-} from "../../lib/theme";
-import type { ThemeTokens } from "../../types/theme";
-import { chromeColors, monoFontFamily } from "../../theme/muiTheme";
-import { CodeFileTree } from "./CodeFileTree";
+} from "../lib/theme";
+import type { ThemeTokens } from "../types/theme";
+import { chromeColors, monoFontFamily } from "../theme/muiTheme";
+import CodeFileTree from "./CodeFileTree";
 
 type CodePreviewVariant = "default" | "embedded";
 
@@ -33,7 +33,7 @@ const languageChipBorder = "rgba(255, 255, 255, 0.14)";
 
 const narrowLayoutQuery = "@media (max-width:920px)";
 
-export function CodePreview({ theme, variant = "default" }: CodePreviewProps) {
+export default function CodePreview({ theme, variant = "default" }: CodePreviewProps) {
   const embedded = variant === "embedded";
   const previews = useMemo(() => generateThemeCodePreviews(theme), [theme]);
   const [selectedPreviewId, setSelectedPreviewId] =

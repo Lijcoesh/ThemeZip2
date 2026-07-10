@@ -7,8 +7,8 @@ import {
   contrastStatusLabels,
   type ContrastStatus,
   type ThemeContrastCheck,
-} from "../../lib/theme";
-import { chromeColors, monoFontFamily } from "../../theme/muiTheme";
+} from "../lib/theme";
+import { chromeColors, monoFontFamily } from "../theme/muiTheme";
 
 type ContrastWarningsProps = {
   checks: readonly ThemeContrastCheck[];
@@ -62,7 +62,7 @@ function pillSx(status: ContrastStatus): SxProps<Theme> {
   };
 }
 
-export function ContrastWarnings({ checks }: ContrastWarningsProps) {
+export default function ContrastWarnings({ checks }: ContrastWarningsProps) {
   const summaryStatus = getSummaryStatus(checks);
   const passingCount = checks.filter((check) => check.status === "good").length;
 

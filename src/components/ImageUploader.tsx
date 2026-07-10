@@ -14,14 +14,14 @@ import {
   filledButtonSx,
   ghostButtonSx,
   type SxObject,
-} from "../../theme/muiTheme";
+} from "../theme/muiTheme";
 import {
   ACCEPTED_IMAGE_EXTENSIONS,
   MAX_IMAGE_SIZE_BYTES,
   formatFileSize,
   validateImageFile,
-} from "../../lib/image/validation";
-import type { UploadedImage } from "../../types/upload";
+} from "../lib/image/validation";
+import type { UploadedImage } from "../types/upload";
 
 type ImageUploaderProps = {
   value: UploadedImage | null;
@@ -68,7 +68,7 @@ const dropZoneErrorSx: SxObject = {
   backgroundColor: chromeColors.dangerSoft,
 };
 
-export function ImageUploader({ value, onImageChange }: ImageUploaderProps) {
+export default function ImageUploader({ value, onImageChange }: ImageUploaderProps) {
   const inputId = useId();
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);

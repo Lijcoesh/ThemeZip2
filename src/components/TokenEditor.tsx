@@ -8,9 +8,9 @@ import {
   isHexColorValue,
   type EditableColorToken,
   type ThemeColorTokenPath,
-} from "../../lib/theme";
-import type { ThemeColors } from "../../types/theme";
-import { chromeColors, monoFontFamily } from "../../theme/muiTheme";
+} from "../lib/theme";
+import type { ThemeColors } from "../types/theme";
+import { chromeColors, monoFontFamily } from "../theme/muiTheme";
 
 type TokenEditorProps = {
   colors: ThemeColors;
@@ -49,7 +49,7 @@ const ColorSwatchInput = styled("input")({
   },
 });
 
-export function TokenEditor({
+export default function TokenEditor({
   colors,
   disabled = false,
   onColorChange,

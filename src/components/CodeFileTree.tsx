@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
-import { chromeColors, monoFontFamily } from "../../theme/muiTheme";
-import type { GeneratedThemeCodeFile } from "../../lib/theme";
+import { chromeColors, monoFontFamily } from "../theme/muiTheme";
+import type { GeneratedThemeCodeFile } from "../lib/theme";
 
 // Dark IDE-style palette local to this file-tree sidebar. Nothing else in the
 // app uses this dark aesthetic, so these stay local hex literals rather than
@@ -23,7 +23,7 @@ type CodeFileTreeProps = {
   ariaLabel: string;
 };
 
-export function CodeFileTree({
+export default function CodeFileTree({
   files,
   selectedFileId,
   onFileSelect,

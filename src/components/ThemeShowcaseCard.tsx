@@ -4,9 +4,9 @@ import Chip from "@mui/material/Chip";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Paper from "@mui/material/Paper";
 import type { SxProps, Theme } from "@mui/material/styles";
-import { CodePreview } from "../CodePreview";
-import type { ThemeTokens } from "../../types/theme";
-import { chromeColors } from "../../theme/muiTheme";
+import CodePreview from "./CodePreview";
+import type { ThemeTokens } from "../types/theme";
+import { chromeColors } from "../theme/muiTheme";
 
 type ThemeShowcaseCardProps = {
   theme: ThemeTokens;
@@ -37,7 +37,7 @@ function themeBadgeSx(theme: ThemeTokens): SxProps<Theme> {
  * directly to the `theme` prop (invariant B) — radius/spacing/typography
  * sizing stays static, ported 1:1 from the original CSS.
  */
-export function ThemeShowcaseCard({ theme }: ThemeShowcaseCardProps) {
+export default function ThemeShowcaseCard({ theme }: ThemeShowcaseCardProps) {
   return (
     <Box sx={{ display: "grid", gap: "16px", alignContent: "start" }}>
       <Chip label="React starter theme" sx={themeBadgeSx(theme)} />

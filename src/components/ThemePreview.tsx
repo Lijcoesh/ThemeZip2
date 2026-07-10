@@ -2,14 +2,14 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import type { SxProps, Theme } from "@mui/material/styles";
-import { ContrastWarnings } from "../ContrastWarnings";
-import { ThemeExportPanel } from "../ThemeExportPanel";
-import { TokenEditor } from "../TokenEditor";
-import { ThemeShowcaseCard } from "./ThemeShowcaseCard";
-import type { ExtractedPalette } from "../../types/color";
-import type { ThemeTokens } from "../../types/theme";
-import { getThemeContrastChecks, type ThemeColorTokenPath } from "../../lib/theme";
-import { chromeColors } from "../../theme/muiTheme";
+import ContrastWarnings from "./ContrastWarnings";
+import ThemeExportPanel from "./ThemeExportPanel";
+import TokenEditor from "./TokenEditor";
+import ThemeShowcaseCard from "./ThemeShowcaseCard";
+import type { ExtractedPalette } from "../types/color";
+import type { ThemeTokens } from "../types/theme";
+import { getThemeContrastChecks, type ThemeColorTokenPath } from "../lib/theme";
+import { chromeColors } from "../theme/muiTheme";
 
 type ThemeGenerationStatus = "idle" | "processing" | "ready" | "error";
 
@@ -52,7 +52,7 @@ function statusPillSx(status: ThemeGenerationStatus): SxProps<Theme> {
   };
 }
 
-export function ThemePreview({
+export default function ThemePreview({
   theme,
   palette,
   status,
