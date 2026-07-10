@@ -1,5 +1,5 @@
-import { colorDistance, createPaletteColor } from "../color/colorUtils";
-import type { ExtractedPalette, PaletteColor } from "../../types/color";
+import { choosePaletteColors, createPaletteColor } from "../color/colorUtils";
+import type { ExtractedPalette } from "../../types/color";
 
 type PaletteExtractionOptions = {
   maxDimension?: number;
@@ -58,7 +58,7 @@ export async function extractColorPalette(
     context.drawImage(loadedImage.source, 0, 0, width, height);
 
     const imageData = context.getImageData(0, 0, width, height);
-    const { candidates, sampledPixelCount } = bucketImageColors(
+    const { candidates, matchedSampleCount } = bucketImageColors(
       imageData.data,
       resolvedOptions.bucketSize,
       resolvedOptions.minAlpha,
@@ -68,8 +68,8 @@ export async function extractColorPalette(
     return {
       colors: choosePaletteColors(candidates, resolvedOptions.colorCount),
       dominant,
-      sourcePixelCount: width * height,
-      sampledPixelCount,
+      totalSampleCount: width * height,
+      matchedSampleCount,
     };
   } finally {
     loadedImage.dispose();
@@ -82,7 +82,7 @@ function bucketImageColors(
   minAlpha: number,
 ) {
   const buckets = new Map<string, ColorBucket>();
-  let sampledPixelCount = 0;
+  let matchedSampleCount = 0;
 
   for (let index = 0; index < pixelData.length; index += 4) {
     const alpha = pixelData[index + 3];
@@ -111,7 +111,7 @@ function bucketImageColors(
     bucket.gTotal += green;
     bucket.bTotal += blue;
     bucket.count += 1;
-    sampledPixelCount += 1;
+    matchedSampleCount += 1;
     buckets.set(bucketKey, bucket);
   }
 
@@ -123,65 +123,15 @@ function bucketImageColors(
           g: bucket.gTotal / bucket.count,
           b: bucket.bTotal / bucket.count,
         },
-        sampledPixelCount === 0 ? 0 : bucket.count / sampledPixelCount,
+        matchedSampleCount === 0 ? 0 : bucket.count / matchedSampleCount,
       ),
     )
     .sort((first, second) => second.population - first.population);
 
   return {
     candidates,
-    sampledPixelCount,
+    matchedSampleCount,
   };
-}
-
-function choosePaletteColors(candidates: PaletteColor[], colorCount: number) {
-  const chosen: PaletteColor[] = [];
-  const addDistinctColor = (color: PaletteColor | undefined) => {
-    if (!color || chosen.length >= colorCount) {
-      return;
-    }
-
-    const isDuplicate = chosen.some(
-      (chosenColor) => colorDistance(chosenColor.rgb, color.rgb) < 30,
-    );
-
-    if (!isDuplicate) {
-      chosen.push(color);
-    }
-  };
-
-  addDistinctColor(candidates[0]);
-
-  candidates
-    .filter((color) => color.hsl.s >= 0.2 && color.population >= 0.001)
-    .sort((first, second) => colorfulnessScore(second) - colorfulnessScore(first))
-    .slice(0, 4)
-    .forEach(addDistinctColor);
-
-  addDistinctColor(
-    candidates
-      .filter((color) => color.luminance >= 0.78)
-      .sort((first, second) => second.population - first.population)[0],
-  );
-  addDistinctColor(
-    candidates
-      .filter((color) => color.luminance <= 0.28)
-      .sort((first, second) => second.population - first.population)[0],
-  );
-
-  candidates.forEach(addDistinctColor);
-
-  return chosen
-    .slice(0, colorCount)
-    .sort((first, second) => second.population - first.population);
-}
-
-function colorfulnessScore(color: PaletteColor) {
-  return color.hsl.s * 2 + color.population * 3 + middleLightnessScore(color);
-}
-
-function middleLightnessScore(color: PaletteColor) {
-  return 1 - Math.abs(color.hsl.l - 0.52);
 }
 
 function compositeChannel(channel: number, alphaRatio: number) {

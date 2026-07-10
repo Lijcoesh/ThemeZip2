@@ -5,19 +5,19 @@ import {
   useState,
 } from "react";
 import {
-  ACCEPTED_IMAGE_EXTENSIONS,
-  MAX_IMAGE_SIZE_BYTES,
+  ACCEPTED_HTML_EXTENSIONS,
+  MAX_HTML_SIZE_BYTES,
   formatFileSize,
-  validateImageFile,
-} from "../lib/image/validation";
-import type { UploadedImage } from "../types/upload";
+  validateHtmlFile,
+} from "../lib/html/validation";
+import type { UploadedHtml } from "../types/upload";
 
-type ImageUploaderProps = {
-  value: UploadedImage | null;
-  onImageChange: (image: UploadedImage | null) => void;
+type HtmlUploaderProps = {
+  value: UploadedHtml | null;
+  onHtmlChange: (html: UploadedHtml | null) => void;
 };
 
-export function ImageUploader({ value, onImageChange }: ImageUploaderProps) {
+export function HtmlUploader({ value, onHtmlChange }: HtmlUploaderProps) {
   const inputId = useId();
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,20 +27,20 @@ export function ImageUploader({ value, onImageChange }: ImageUploaderProps) {
       return;
     }
 
-    const validation = await validateImageFile(file);
+    const validation = await validateHtmlFile(file);
 
     if (!validation.ok) {
       setError(validation.message);
-      onImageChange(null);
+      onHtmlChange(null);
       return;
     }
 
     setError(null);
-    onImageChange({
-      kind: "image",
+    onHtmlChange({
+      kind: "html",
       file,
-      previewUrl: URL.createObjectURL(file),
-      dimensions: validation.dimensions,
+      htmlText: validation.htmlText,
+      title: validation.title,
     });
   }
 
@@ -77,10 +77,11 @@ export function ImageUploader({ value, onImageChange }: ImageUploaderProps) {
   return (
     <>
       <div className="upload-header">
-        <h2 id="upload-title">Upload reference image</h2>
+        <h2 id="upload-title">Import a saved HTML page</h2>
         <p>
-          PNG, JPG, JPEG and WebP are accepted up to{" "}
-          {formatFileSize(MAX_IMAGE_SIZE_BYTES)}.
+          Press Ctrl+S (or Cmd+S) on a page you like, save it as HTML, then
+          drop the file here. Accepted up to{" "}
+          {formatFileSize(MAX_HTML_SIZE_BYTES)}.
         </p>
       </div>
 
@@ -94,22 +95,22 @@ export function ImageUploader({ value, onImageChange }: ImageUploaderProps) {
           id={inputId}
           className="file-input"
           type="file"
-          accept={ACCEPTED_IMAGE_EXTENSIONS.join(",")}
+          accept={[...ACCEPTED_HTML_EXTENSIONS, "text/html"].join(",")}
           onChange={handleInputChange}
         />
 
         <p className="drop-zone-title">
-          {value ? "Reference uploaded" : "Drop an image here"}
+          {value ? "HTML page uploaded" : "Drop an .html file here"}
         </p>
         <p className="drop-zone-text">
           {value
-            ? "ThemeZip is extracting palette suggestions locally in your browser."
-            : "Choose a screenshot, logo or UI mockup to start the local preview flow."}
+            ? "ThemeZip is scanning inline styles in this file locally in your browser."
+            : "Choose a saved HTML page to start the local preview flow."}
         </p>
 
         <div className="upload-actions">
           <label className="button-like" htmlFor={inputId}>
-            {value ? "Replace image" : "Upload image"}
+            {value ? "Replace HTML" : "Upload HTML"}
           </label>
           {value ? (
             <button
@@ -117,7 +118,7 @@ export function ImageUploader({ value, onImageChange }: ImageUploaderProps) {
               type="button"
               onClick={() => {
                 setError(null);
-                onImageChange(null);
+                onHtmlChange(null);
               }}
             >
               Remove
@@ -132,13 +133,11 @@ export function ImageUploader({ value, onImageChange }: ImageUploaderProps) {
         ) : null}
 
         {value ? (
-          <div className="image-preview" aria-label="Uploaded image preview">
-            <img src={value.previewUrl} alt="Uploaded visual reference preview" />
+          <div className="image-preview" aria-label="Uploaded HTML file summary">
             <div className="image-meta">
-              <strong>{value.file.name}</strong>
+              <strong>{value.title ?? value.file.name}</strong>
               <span>
-                {value.dimensions.width} by {value.dimensions.height}px,{" "}
-                {formatFileSize(value.file.size)}
+                {value.file.name}, {formatFileSize(value.file.size)}
               </span>
             </div>
           </div>

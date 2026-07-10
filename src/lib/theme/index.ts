@@ -1,6 +1,7 @@
 export {
   createPlaceholderThemeResult,
   generatePlaceholderTheme,
+  generateThemeFromHtml,
   generateThemeFromImage,
   generateThemeFromPalette,
 } from "./generateTheme";
@@ -44,4 +45,4 @@ export type {
   ThemeCodeLanguage,
   ThemeCodePreviewId,
 } from "./codeGeneration";
-export type { ThemeGenerationInput, ThemeGenerationResult } from "./generateTheme";
+export type { ThemeGenerationResult, ThemeSource } from "./generateTheme";

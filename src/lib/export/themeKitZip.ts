@@ -5,6 +5,7 @@ import { hexToRgb, rgbToHsl } from "../color/colorUtils";
 import { generateThemeOutput } from "../theme/codeGeneration";
 import type { ThemeContrastCheck } from "../theme/contrastChecks";
 import { isHexColorValue } from "../theme/editableColorTokens";
+import type { ThemeSource } from "../theme/generateTheme";
 import {
   isThemeExportFormatSelected,
   themeExportFormatOptions,
@@ -23,8 +24,8 @@ export type ThemeKitGenerationInput = {
   palette: ExtractedPalette | null;
   contrastChecks: readonly ThemeContrastCheck[];
   selectedFormats: readonly ThemeExportFormatId[];
-  source: "placeholder" | "image";
-  sourceImageName?: string;
+  source: ThemeSource;
+  sourceFileName?: string;
   generatedAt?: string;
 };
 
@@ -32,10 +33,10 @@ type ThemeKitDesignReport = {
   generatedAt: string;
   generatedBy: "ThemeZip MVP";
   source: {
-    type: "placeholder" | "image";
-    imageName: string | null;
-    sourcePixelCount: number | null;
-    sampledPixelCount: number | null;
+    type: ThemeSource;
+    fileName: string | null;
+    totalSampleCount: number | null;
+    matchedSampleCount: number | null;
   };
   selectedFormats: readonly ThemeExportFormatId[];
   styleCategory: string;
@@ -150,8 +151,8 @@ export function downloadBlob(blob: Blob, filename: string) {
   window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
 }
 
-export function createThemeKitZipFilename(sourceImageName?: string) {
-  const normalizedSourceName = sourceImageName
+export function createThemeKitZipFilename(sourceFileName?: string) {
+  const normalizedSourceName = sourceFileName
     ?.replace(/\.[^/.]+$/, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -182,10 +183,7 @@ function generateReadme(
   const selectedOptionLabels = themeExportFormatOptions
     .filter((option) => input.selectedFormats.includes(option.id))
     .map((option) => `- ${option.label}`);
-  const sourceLine =
-    input.source === "image" && input.sourceImageName
-      ? `Generated from local image reference: ${input.sourceImageName}`
-      : "Generated from the ThemeZip fallback token preset.";
+  const sourceLine = getSourceLine(input.source, input.sourceFileName);
   const sections = [
     `# ThemeZip Theme Kit
 
@@ -226,6 +224,22 @@ as an exact clone of a third-party brand or product.`,
   ].filter(Boolean);
 
   return `${sections.join("\n\n")}\n`;
+}
+
+function getSourceLine(source: ThemeSource, sourceFileName?: string) {
+  if (!sourceFileName) {
+    return "Generated from the ThemeZip fallback token preset.";
+  }
+
+  if (source === "image") {
+    return `Generated from local image reference: ${sourceFileName}`;
+  }
+
+  if (source === "html") {
+    return `Generated from local HTML reference: ${sourceFileName}`;
+  }
+
+  return "Generated from the ThemeZip fallback token preset.";
 }
 
 function generateReactReadmeSection(
@@ -324,9 +338,9 @@ function generateDesignReport(
     generatedBy: "ThemeZip MVP",
     source: {
       type: input.source,
-      imageName: input.sourceImageName ?? null,
-      sourcePixelCount: input.palette?.sourcePixelCount ?? null,
-      sampledPixelCount: input.palette?.sampledPixelCount ?? null,
+      fileName: input.sourceFileName ?? null,
+      totalSampleCount: input.palette?.totalSampleCount ?? null,
+      matchedSampleCount: input.palette?.matchedSampleCount ?? null,
     },
     selectedFormats: input.selectedFormats,
     styleCategory: inferStyleCategory(input.theme),
@@ -368,7 +382,7 @@ function createDesignReportWarnings(input: ThemeKitGenerationInput) {
 
   if (input.source === "placeholder" || !input.palette) {
     warnings.push(
-      "No extracted image palette was available, so fallback starter tokens were used.",
+      "No extracted palette was available, so fallback starter tokens were used.",
     );
   }
 

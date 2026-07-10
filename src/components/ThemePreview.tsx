@@ -5,7 +5,11 @@ import { ThemeExportPanel } from "./ThemeExportPanel";
 import { TokenEditor } from "./TokenEditor";
 import type { ExtractedPalette } from "../types/color";
 import type { ThemeTokens } from "../types/theme";
-import { getThemeContrastChecks, type ThemeColorTokenPath } from "../lib/theme";
+import {
+  getThemeContrastChecks,
+  type ThemeColorTokenPath,
+  type ThemeSource,
+} from "../lib/theme";
 
 type ThemeGenerationStatus = "idle" | "processing" | "ready" | "error";
 
@@ -14,9 +18,9 @@ type ThemePreviewProps = {
   palette: ExtractedPalette | null;
   status: ThemeGenerationStatus;
   error: string | null;
-  hasUploadedImage: boolean;
-  source: "placeholder" | "image";
-  sourceImageName?: string;
+  hasActiveSource: boolean;
+  source: ThemeSource;
+  sourceFileName?: string;
   onColorTokenChange: (path: ThemeColorTokenPath, value: string) => void;
 };
 
@@ -25,9 +29,9 @@ export function ThemePreview({
   palette,
   status,
   error,
-  hasUploadedImage,
+  hasActiveSource,
   source,
-  sourceImageName,
+  sourceFileName,
   onColorTokenChange,
 }: ThemePreviewProps) {
   const previewStyles = {
@@ -45,9 +49,11 @@ export function ThemePreview({
     "--theme-strong-border": theme.colors.border.strong,
     "--theme-shadow": theme.shadows.md,
   } as CSSProperties;
-  const statusLabel = getStatusLabel(status, hasUploadedImage);
+  const statusLabel = getStatusLabel(status, hasActiveSource);
   const statusClassName = ["preview-status", `is-${status}`].join(" ");
   const contrastChecks = getThemeContrastChecks(theme.colors);
+  const paletteUnitLabel =
+    source === "html" ? "% of matched color declarations" : "% of sampled pixels";
 
   return (
     <section className="preview-section" aria-labelledby="preview-title">
@@ -60,11 +66,9 @@ export function ThemePreview({
             now.
           </p>
           <p className="preview-note" role="note">
-            Important: this works best with images that have a limited color
-            palette. The more colors and visual noise in the source, the more
-            likely the generated theme will be less accurate. Screenshots of
-            busy sites with lots of photos or mixed imagery usually produce
-            weaker results.
+            {source === "html"
+              ? "Important: HTML import only reads colors from inline styles, <style> blocks and legacy color attributes inside the uploaded file. Pages that load most of their CSS from separate stylesheet files may produce a sparser palette."
+              : "Important: this works best with images that have a limited color palette. The more colors and visual noise in the source, the more likely the generated theme will be less accurate. Screenshots of busy sites with lots of photos or mixed imagery usually produce weaker results."}
           </p>
           {error ? (
             <p className="generation-error" role="alert">
@@ -124,7 +128,7 @@ export function ThemePreview({
                     style={{ backgroundColor: color.hex }}
                     title={`${color.hex} (${Math.round(
                       color.population * 100,
-                    )}% of sampled pixels)`}
+                    )}${paletteUnitLabel})`}
                     aria-label={color.hex}
                     key={color.hex}
                   />
@@ -149,19 +153,16 @@ export function ThemePreview({
         palette={palette}
         contrastChecks={contrastChecks}
         source={source}
-        sourceImageName={sourceImageName}
-        disabled={!hasUploadedImage || status === "processing"}
+        sourceFileName={sourceFileName}
+        disabled={!hasActiveSource || status === "processing"}
       />
     </section>
   );
 }
 
-function getStatusLabel(
-  status: ThemeGenerationStatus,
-  hasUploadedImage: boolean,
-) {
-  if (!hasUploadedImage) {
-    return "Waiting for image";
+function getStatusLabel(status: ThemeGenerationStatus, hasActiveSource: boolean) {
+  if (!hasActiveSource) {
+    return "Waiting for upload";
   }
 
   if (status === "processing") {
@@ -176,5 +177,5 @@ function getStatusLabel(
     return "Fallback tokens";
   }
 
-  return "Image loaded";
+  return "Reference loaded";
 }

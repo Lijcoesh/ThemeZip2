@@ -1,4 +1,7 @@
+import { formatFileSize } from "../file/formatFileSize";
 import type { ImageDimensions } from "../../types/upload";
+
+export { formatFileSize } from "../file/formatFileSize";
 
 export const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 export const ACCEPTED_IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp"];
@@ -51,11 +54,6 @@ export async function validateImageFile(
       message: "The selected file could not be loaded as an image.",
     };
   }
-}
-
-export function formatFileSize(bytes: number) {
-  const megabytes = bytes / 1024 / 1024;
-  return `${megabytes.toFixed(megabytes >= 10 ? 0 : 1)} MB`;
 }
 
 function getFileExtension(fileName: string) {

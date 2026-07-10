@@ -1,7 +1,7 @@
 # ThemeZip
 
-ThemeZip is a React + TypeScript web app that generates a practical starter theme from a reference image.
-Upload a screenshot, logo, or UI mockup, then ThemeZip extracts colors, maps them into semantic tokens, previews the result, and exports theme assets.
+ThemeZip is a React + TypeScript web app that generates a practical starter theme from a reference image or a saved HTML page.
+Upload a screenshot, logo, or UI mockup — or import an HTML file saved from any page (Ctrl+S) — and ThemeZip extracts colors, maps them into semantic tokens, previews the result, and exports theme assets.
 
 ## About This Project
 
@@ -12,7 +12,8 @@ The goal is to move fast from visual inspiration to usable theme tokens and expo
 ## Features (MVP)
 
 - Image upload and preview
-- Color extraction from uploaded image
+- HTML page import (from a locally saved .html file)
+- Color extraction from uploaded image or HTML page
 - Semantic theme token generation
 - Editable token panel
 - Live component/theme preview
@@ -68,6 +69,8 @@ ThemeZip/
     lib/
       color/
       export/
+      file/
+      html/
       image/
       theme/
     types/

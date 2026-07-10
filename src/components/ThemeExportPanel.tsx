@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ExtractedPalette } from "../types/color";
 import type { ThemeTokens } from "../types/theme";
-import type { ThemeContrastCheck } from "../lib/theme";
+import type { ThemeContrastCheck, ThemeSource } from "../lib/theme";
 import {
   areThemeExportFormatsEqual,
   defaultThemeExportFormatIds,
@@ -22,8 +22,8 @@ type ThemeExportPanelProps = {
   theme: ThemeTokens;
   palette: ExtractedPalette | null;
   contrastChecks: readonly ThemeContrastCheck[];
-  source: "placeholder" | "image";
-  sourceImageName?: string;
+  source: ThemeSource;
+  sourceFileName?: string;
   disabled?: boolean;
 };
 
@@ -32,7 +32,7 @@ export function ThemeExportPanel({
   palette,
   contrastChecks,
   source,
-  sourceImageName,
+  sourceFileName,
   disabled = false,
 }: ThemeExportPanelProps) {
   const [selectedFormats, setSelectedFormats] = useState<
@@ -49,7 +49,7 @@ export function ThemeExportPanel({
   useEffect(() => {
     setExportStatus("idle");
     setExportError(null);
-  }, [theme, palette, source, sourceImageName]);
+  }, [theme, palette, source, sourceFileName]);
 
   function handleFormatToggle(formatId: ThemeExportFormatId) {
     setExportStatus("idle");
@@ -86,10 +86,10 @@ export function ThemeExportPanel({
         contrastChecks,
         selectedFormats,
         source,
-        sourceImageName,
+        sourceFileName,
       });
 
-      downloadBlob(zipBlob, createThemeKitZipFilename(sourceImageName));
+      downloadBlob(zipBlob, createThemeKitZipFilename(sourceFileName));
       setExportStatus("downloaded");
     } catch {
       setExportStatus("error");
@@ -165,8 +165,8 @@ export function ThemeExportPanel({
 
       {disabled ? (
         <p className="export-helper" role="status">
-          Upload an image and let ThemeZip finish generating tokens before
-          downloading.
+          Upload an image or HTML page and let ThemeZip finish generating
+          tokens before downloading.
         </p>
       ) : null}
 

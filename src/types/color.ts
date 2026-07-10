@@ -21,6 +21,8 @@ export type PaletteColor = {
 export type ExtractedPalette = {
   colors: PaletteColor[];
   dominant: PaletteColor | null;
-  sourcePixelCount: number;
-  sampledPixelCount: number;
+  /** Total color samples considered before filtering (e.g. pixels scanned, or color declarations found). */
+  totalSampleCount: number;
+  /** Samples that passed filtering and contributed to the palette buckets. */
+  matchedSampleCount: number;
 };
