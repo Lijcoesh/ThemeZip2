@@ -98,9 +98,65 @@ function App() {
         sourceImageName={uploadedImage?.file.name}
         onColorTokenChange={handleColorTokenChange}
       />
+
+      <Box
+        component="section"
+        aria-labelledby="how-it-works-title"
+        sx={{ marginTop: "56px" }}
+      >
+        <Box
+          component="h2"
+          id="how-it-works-title"
+          sx={{
+            color: chromeColors.ink,
+            fontSize: "1.75rem",
+            margin: "0 0 24px",
+          }}
+        >
+          How ThemeZip works
+        </Box>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "24px",
+            "@media (max-width: 920px)": {
+              gridTemplateColumns: "1fr",
+            },
+          }}
+        >
+          <Box>
+            <Box component="h3" sx={{ color: chromeColors.ink, fontSize: "1.125rem", margin: "0 0 8px" }}>
+              1. Upload a visual reference
+            </Box>
+            <Box component="p" sx={{ color: chromeColors.muted, margin: 0, lineHeight: 1.6 }}>
+              Drop in a screenshot, logo, or UI mockup. Everything is processed locally in your browser, so no image
+              ever leaves your device.
+            </Box>
+          </Box>
+          <Box>
+            <Box component="h3" sx={{ color: chromeColors.ink, fontSize: "1.125rem", margin: "0 0 8px" }}>
+              2. Extract semantic color tokens
+            </Box>
+            <Box component="p" sx={{ color: chromeColors.muted, margin: 0, lineHeight: 1.6 }}>
+              ThemeZip analyzes the image's palette and maps the colors into semantic tokens like background,
+              surface, primary, and accent, ready to preview and edit.
+            </Box>
+          </Box>
+          <Box>
+            <Box component="h3" sx={{ color: chromeColors.ink, fontSize: "1.125rem", margin: "0 0 8px" }}>
+              3. Export a React theme starter
+            </Box>
+            <Box component="p" sx={{ color: chromeColors.muted, margin: 0, lineHeight: 1.6 }}>
+              Preview components live, fine-tune tokens, then export CSS variables or a React/TypeScript theme
+              starter folder for your project.
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+
       <Analytics />
     </Box>
-
   );
 }
 
