@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "themezip.net"
+        }
+      ],
+      "destination": "https://www.themezip.net/:path*",
+      "permanent": true
+    }
+  ]
+}
